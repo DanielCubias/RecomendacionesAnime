@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "/src/index.css"
+import Recomendaciones from "./Recomendaciones";
 
 // puntuacion por defecto
 
@@ -8,7 +9,8 @@ export default function AnimeRatingApp() {
   const [selectedAnimes, setSelectedAnimes] = useState({});
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(true);
-  const [recommendations, setRecommendations] = useState([]);
+  const [recommendations, setRecommendations] = useState({});
+  const [called, setCalled] = useState(false);
 
 
   //  Obtener los animes desde la API
@@ -51,6 +53,11 @@ export default function AnimeRatingApp() {
 
   const handleGetRecommendations = async () => {
   console.log("Animes seleccionados para recomendaciones:", selectedAnimes);
+  if (Object.keys(selectedAnimes).length === 0) {
+    alert("Por favor, selecciona al menos un anime y asigna una puntuación.");
+    return;
+  }
+  setCalled(true);
 
   const formattedData = {
     ratings: Object.entries(selectedAnimes).map(([id, anime]) => ({
@@ -74,9 +81,10 @@ export default function AnimeRatingApp() {
     console.log("Recomendaciones recibidas:", data);
 
     // 👇 Guardamos las recomendaciones recibidas
-    setRecommendations(data.recommendations || []);
+    setRecommendations(data || {});
   } catch (err) {
     console.error("Error al obtener recomendaciones:", err);
+    setCalled(false);
   }
 };
 
@@ -164,28 +172,7 @@ export default function AnimeRatingApp() {
 
 
 {/* Recomendaciones */}
-{recommendations.length > 0 && (
-  <div className="mt-10 bg-white p-4 rounded-xl shadow">
-    <h2 className="text-2xl font-bold mb-4 text-center">✨ Recomendaciones para ti</h2>
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {recommendations.map((anime, index) => (
-        <div
-          key={index}
-          className="bg-gray-50 rounded-lg shadow p-2 hover:shadow-md transition"
-        >
-          {anime.image && (
-            <img
-              src={anime.image}
-              alt={anime.title}
-              className="w-full h-48 object-cover rounded"
-            />
-          )}
-          <p className="text-center mt-2 font-medium text-sm">{anime.title}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+{called && <Recomendaciones animesList={recommendations} />}
 
 
     </div>
