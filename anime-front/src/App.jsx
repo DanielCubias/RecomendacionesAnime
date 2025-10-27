@@ -45,17 +45,34 @@ export default function AnimeRatingApp() {
   };
 
   const handleGetRecommendations = async () => {
-    const formattedData = Object.entries(selectedAnimes).map(([id, anime]) => ({
-      name: parseInt(id),
+    console.log("Animes seleccionados para recomendaciones:", selectedAnimes);
+  const formattedData = {
+    ratings: Object.entries(selectedAnimes).map(([id, anime]) => ({
+      name: parseInt(anime.title),         // Or use anime.name if your backend expects names instead of IDs
       rating: parseFloat(anime.score),
-    }));
-    try {
-      const response = await fetch("http://localhost:5000/anime/", formattedData);
-      const data = await response.json();
-      console.log("Recomendaciones recibidas:", data);
-    } catch (err) {
-      console.error("Error al obtener recomendaciones:", err);
-    }}
+    })),
+  };
+
+  try {
+    const response = await fetch("http://localhost:5000/anime/", {
+      method: "POST", // 👈 POST request
+      headers: {
+        "Content-Type": "application/json", // 👈 Required for Flask to read JSON
+      },
+      body: JSON.stringify(formattedData), // 👈 Send JSON body
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Recomendaciones recibidas:", data);
+  } catch (err) {
+    console.error("Error al obtener recomendaciones:", err);
+  }
+};
+
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
