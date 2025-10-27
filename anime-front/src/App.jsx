@@ -44,9 +44,24 @@ export default function AnimeRatingApp() {
     }));
   };
 
+  const handleGetRecommendations = async () => {
+    const formattedData = Object.entries(selectedAnimes).map(([id, anime]) => ({
+      name: parseInt(id),
+      rating: parseFloat(anime.score),
+    }));
+    try {
+      const response = await fetch("http://localhost:5000/anime/", formattedData);
+      const data = await response.json();
+      console.log("Recomendaciones recibidas:", data);
+    } catch (err) {
+      console.error("Error al obtener recomendaciones:", err);
+    }}
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-4">Puntúa tus animes favoritos 🎌</h1>
+      <button
+        onClick={handleGetRecommendations}>Coger recomendaciones</button>
 
       {/* Control de cantidad */}
       <div className="text-center mb-6">
