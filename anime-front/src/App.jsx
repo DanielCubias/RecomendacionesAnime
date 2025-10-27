@@ -6,7 +6,7 @@ export default function AnimeRatingApp() {
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Obtener los animes desde la API
+  //  Obtener los animes desde la API
   useEffect(() => {
     const fetchAnimes = async () => {
       try {
@@ -23,7 +23,7 @@ export default function AnimeRatingApp() {
     fetchAnimes();
   }, [limit]);
 
-  // 🔹 Seleccionar o deseleccionar un anime
+  // Seleccionar o deseleccionar un anime
   const toggleAnimeSelection = (anime) => {
     setSelectedAnimes((prev) => {
       const newSelection = { ...prev };
@@ -36,7 +36,7 @@ export default function AnimeRatingApp() {
     });
   };
 
-  // 🔹 Cambiar puntuación
+  // Cambiar puntuación
   const handleScoreChange = (animeId, value) => {
     setSelectedAnimes((prev) => ({
       ...prev,
