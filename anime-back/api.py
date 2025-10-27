@@ -1,12 +1,15 @@
 from flask import Flask, jsonify, request as req
+from flask_cors import CORS
 import pandas as pd
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/anime/", methods=["POST"])
 def crearCarrera():
     # Receive user ratings from frontend
     data = req.get_json()
+    print("Received data:", data)
 
     if not data or "ratings" not in data:
         return jsonify({"error": "Missing 'ratings' field"}), 400
