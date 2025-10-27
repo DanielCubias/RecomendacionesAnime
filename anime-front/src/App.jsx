@@ -47,10 +47,12 @@ export default function AnimeRatingApp() {
   const handleGetRecommendations = async () => {
     console.log("Animes seleccionados para recomendaciones:", selectedAnimes);
   const formattedData = {
-    ratings: Object.entries(selectedAnimes).map(([id, anime]) => ({
-      name: parseInt(anime.title),         // Or use anime.name if your backend expects names instead of IDs
+    ratings: Object.entries(selectedAnimes).map(([id, anime]) => {
+    console.log("Procesando anime:", anime);
+    return  {
+      name: anime.title,         // Or use anime.name if your backend expects names instead of IDs
       rating: parseFloat(anime.score),
-    })),
+    }}),
   };
 
   try {
