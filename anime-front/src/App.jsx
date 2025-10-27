@@ -40,7 +40,7 @@ export default function AnimeRatingApp() {
   const handleScoreChange = (animeId, value) => {
     setSelectedAnimes((prev) => ({
       ...prev,
-      [animeId]: { ...prev[animeId], score: value },
+      [animeId]: { ...prev[animeId], score: parseFloat(value) },
     }));
   };
 
