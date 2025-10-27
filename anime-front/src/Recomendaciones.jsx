@@ -1,25 +1,30 @@
 import React from "react";
 
-const Recomendaciones = ({ animesList }) => {
-    console.log("Animes recibidos para mostrar recomendaciones:", animesList);
+const Recomendaciones = ({ animesList, onClose, selectedAnimesLength }) => {
 
     const entries = animesList ? Object.entries(animesList) : [];
+    const orderedEntries = entries.sort((a, b) => b[1] - a[1]);
 
     return (
-        <div style={styles.bg}>
+        <div style={styles.bg} onClick={onClose}>
             {entries.length > 0 ? (
-                <div style={styles.modal}>
+                <div
+                    style={styles.modal}
+                    onClick={(e) => e.stopPropagation()} // prevent closing when clicking modal
+                >
                     <h2 style={styles.title}>Recomendaciones de Anime</h2>
                     <div style={styles.animeList}>
-                        {entries.map(([title, score], index) => (
+                        {orderedEntries.map(([title, score], index) => (
                             <div key={index} style={styles.anime}>
-                                - {title}, Score: {(score * entries.length).toFixed(2) + " %"}
+                                - {title}, Score: {(score * 10 / selectedAnimesLength).toFixed(2) + " %"}
                             </div>
                         ))}
                     </div>
                 </div>
             ) : (
-                "Cargando..."
+                <div style={styles.spinnerContainer}>
+                    <div style={styles.spinner}></div>
+                </div>
             )}
         </div>
     );
@@ -38,7 +43,7 @@ const styles = {
         display: 'flex',         
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 9999
+        zIndex: 9999,
     },
     modal: {
         backgroundColor: 'black',
@@ -50,9 +55,10 @@ const styles = {
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',  // vertical center
-        alignItems: 'center',      // horizontal center
-        textAlign: 'center'        // center text inside
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        cursor: 'default'
     },
     title: {
         color: 'white',
@@ -67,5 +73,19 @@ const styles = {
     animeList: {
         maxHeight: '80%',
         width: '100%'
-    }
+    },
+    spinnerContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+    },
+    spinner: {
+        border: '6px solid rgba(255, 255, 255, 0.2)',
+        borderTop: '6px solid white',
+        borderRadius: '50%',
+        width: '50px',
+        height: '50px',
+        animation: 'spin 1s linear infinite',
+    },
 };

@@ -192,3 +192,8 @@ input[type="checkbox"] {
 button:hover {
   animation: neonPulse 1s infinite alternate;
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

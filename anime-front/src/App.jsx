@@ -88,6 +88,11 @@ export default function AnimeRatingApp() {
   }
 };
 
+const closeRecommendations = () => {
+  setCalled(false);
+  setRecommendations({});
+}
+
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -172,7 +177,7 @@ export default function AnimeRatingApp() {
 
 
 {/* Recomendaciones */}
-{called && <Recomendaciones animesList={recommendations} />}
+{called && <Recomendaciones animesList={recommendations} selectedAnimesLength={Object.keys(selectedAnimes).length} onClose={closeRecommendations} />}
 
 
     </div>
