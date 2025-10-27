@@ -73,8 +73,8 @@ select:focus {
 }
 
 /* Tarjeta de anime */
-.bg-white {
-  background-color: #1a1a2e !important;
+.anime-card {
+  background-color: #1a1a2e;
   border: 1px solid #00fff2;
   border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 255, 242, 0.2);

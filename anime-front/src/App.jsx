@@ -108,7 +108,7 @@ const closeRecommendations = () => {
           <ul className="list-disc ml-5">
             {Object.entries(selectedAnimes).map(([id, anime]) => (
               <li key={id}>
-                {anime.title}: <strong>{anime.score || "sin puntuación"}</strong>
+                {anime.title}: <strong>{anime.score}</strong>
               </li>
             ))}
           </ul>
@@ -117,7 +117,7 @@ const closeRecommendations = () => {
 
 
       {/* Control de cantidad */}
-      <div className="text-center mb-6">
+       <div className="text-center mb-6 mt-8 py-4">
         <label className="mr-2 font-medium">Mostrar:</label>
         <select
           value={limit}
@@ -134,45 +134,48 @@ const closeRecommendations = () => {
       {loading && <p className="text-center">Cargando animes...</p>}
 
       {/* Lista de animes */}
-      {!loading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {animes.map((anime) => (
-            <div
-              key={anime.mal_id}
-              className="bg-white rounded-xl shadow p-3 hover:shadow-lg transition"
-            >
-              <img
-                src={anime.images.jpg.image_url}
-                alt={anime.title}
-                className="w-full h-48 object-cover rounded"
-              />
-              <div className="mt-2 flex flex-col items-center">
-                <p className="font-semibold text-center text-sm mb-1">{anime.title}</p>
+      
+ {!loading && (
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8"> {/* Más espacio entre tarjetas */}
+    {animes.map((anime) => (
+      <div
+        key={anime.mal_id}
+        className="anime-card p-4 hover:shadow-lg transition"
+      >
+        <img
+          src={anime.images.jpg.image_url}
+          alt={anime.title}
+          className="w-full h-72 object-cover rounded" // Imagen más alta
+        />
+        <div className="mt-4 flex flex-col items-center">
+          <p className="font-semibold text-center text-sm mb-3">{anime.title}</p>
 
-                <label className="flex items-center gap-1 text-sm mb-1">
-                  <input
-                    type="checkbox"
-                    checked={!!selectedAnimes[anime.mal_id]}
-                    onChange={() => toggleAnimeSelection(anime)}
-                  />
-                  Seleccionar
-                </label>
+          <label className="flex items-center gap-10 text-sm mb-3"> {/* Más espacio entre checkbox y texto */}
+            <input
+              type="checkbox"
+              checked={!!selectedAnimes[anime.mal_id]}
+              onChange={() => toggleAnimeSelection(anime)}
+            />
+            Seleccionar
+          </label>
 
-                {selectedAnimes[anime.mal_id] && (
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={selectedAnimes[anime.mal_id].score}
-                    onChange={(e) => handleScoreChange(anime.mal_id, e.target.value)}
-                    className="border rounded w-16 text-center"
-                  />
-                )}
-              </div>
-            </div>
-          ))}
+          {selectedAnimes[anime.mal_id] && (
+            <input
+              type="number"
+              min="1"
+              max="10"
+              value={selectedAnimes[anime.mal_id].score}
+              onChange={(e) => handleScoreChange(anime.mal_id, e.target.value)}
+              className="border rounded w-20 text-center mt-4" // Separación y ancho extra
+            />
+          )}
         </div>
-      )}
+      </div>
+    ))}
+  </div>
+)}
+
+
 
 
 
