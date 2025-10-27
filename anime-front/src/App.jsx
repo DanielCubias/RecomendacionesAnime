@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
+import "/src/index.css"
+
+// puntuacion por defecto
 
 export default function AnimeRatingApp() {
   const [animes, setAnimes] = useState([]);
   const [selectedAnimes, setSelectedAnimes] = useState({});
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState([]);
+
 
   //  Obtener los animes desde la API
   useEffect(() => {
@@ -45,21 +50,20 @@ export default function AnimeRatingApp() {
   };
 
   const handleGetRecommendations = async () => {
-    console.log("Animes seleccionados para recomendaciones:", selectedAnimes);
+  console.log("Animes seleccionados para recomendaciones:", selectedAnimes);
+
   const formattedData = {
     ratings: Object.entries(selectedAnimes).map(([id, anime]) => ({
-      name: parseInt(anime.title),         // Or use anime.name if your backend expects names instead of IDs
+      name: anime.title,
       rating: parseFloat(anime.score),
     })),
   };
 
   try {
     const response = await fetch("http://localhost:5000/anime/", {
-      method: "POST", // 👈 POST request
-      headers: {
-        "Content-Type": "application/json", // 👈 Required for Flask to read JSON
-      },
-      body: JSON.stringify(formattedData), // 👈 Send JSON body
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formattedData),
     });
 
     if (!response.ok) {
@@ -68,6 +72,9 @@ export default function AnimeRatingApp() {
 
     const data = await response.json();
     console.log("Recomendaciones recibidas:", data);
+
+    // 👇 Guardamos las recomendaciones recibidas
+    setRecommendations(data.recommendations || []);
   } catch (err) {
     console.error("Error al obtener recomendaciones:", err);
   }
@@ -79,6 +86,22 @@ export default function AnimeRatingApp() {
       <h1 className="text-3xl font-bold text-center mb-4">Puntúa tus animes favoritos 🎌</h1>
       <button
         onClick={handleGetRecommendations}>Coger recomendaciones</button>
+
+        
+      {/* Resumen de puntuaciones */}
+      {Object.keys(selectedAnimes).length > 0 && (
+        <div className="mt-8 bg-gray-100 p-4 rounded-xl">
+          <h2 className="text-xl font-bold mb-2">🎯 Animes puntuados:</h2>
+          <ul className="list-disc ml-5">
+            {Object.entries(selectedAnimes).map(([id, anime]) => (
+              <li key={id}>
+                {anime.title}: <strong>{anime.score || "sin puntuación"}</strong>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
 
       {/* Control de cantidad */}
       <div className="text-center mb-6">
@@ -138,19 +161,33 @@ export default function AnimeRatingApp() {
         </div>
       )}
 
-      {/* Resumen de puntuaciones */}
-      {Object.keys(selectedAnimes).length > 0 && (
-        <div className="mt-8 bg-gray-100 p-4 rounded-xl">
-          <h2 className="text-xl font-bold mb-2">🎯 Animes puntuados:</h2>
-          <ul className="list-disc ml-5">
-            {Object.entries(selectedAnimes).map(([id, anime]) => (
-              <li key={id}>
-                {anime.title}: <strong>{anime.score || "sin puntuación"}</strong>
-              </li>
-            ))}
-          </ul>
+
+
+{/* Recomendaciones */}
+{recommendations.length > 0 && (
+  <div className="mt-10 bg-white p-4 rounded-xl shadow">
+    <h2 className="text-2xl font-bold mb-4 text-center">✨ Recomendaciones para ti</h2>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {recommendations.map((anime, index) => (
+        <div
+          key={index}
+          className="bg-gray-50 rounded-lg shadow p-2 hover:shadow-md transition"
+        >
+          {anime.image && (
+            <img
+              src={anime.image}
+              alt={anime.title}
+              className="w-full h-48 object-cover rounded"
+            />
+          )}
+          <p className="text-center mt-2 font-medium text-sm">{anime.title}</p>
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 }
