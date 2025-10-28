@@ -64,7 +64,7 @@ select:focus {
 .grid {
   display: grid;
   gap: 1.5rem;
-  justify-content: center;
+  justify-items: center;
 }
 
 /* Mostrar 2 por fila en móvil, 3 en tablet, 4-5 en escritorio */

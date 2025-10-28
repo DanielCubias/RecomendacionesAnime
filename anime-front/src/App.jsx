@@ -96,7 +96,7 @@ const closeRecommendations = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold text-center mb-4">Puntúa tus animes favoritos 🎌</h1>
+      <h1 className="text-3xl font-bold text-center mb-4">🎌 Puntúa tus animes favoritos 🎌</h1>
       <button
         onClick={handleGetRecommendations}>Coger recomendaciones</button>
 
@@ -136,7 +136,7 @@ const closeRecommendations = () => {
       {/* Lista de animes */}
       
  {!loading && (
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8"> {/* Más espacio entre tarjetas */}
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-"> {/* Más espacio entre tarjetas */}
     {animes.map((anime) => (
       <div
         key={anime.mal_id}
