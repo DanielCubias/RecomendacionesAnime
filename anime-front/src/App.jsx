@@ -117,21 +117,21 @@ const closeRecommendations = () => {
 
 
       {/* Control de cantidad */}
-       <div className="text-center mb-6 mt-8 py-4">
-        <label className="mr-2 font-medium">Mostrar:</label>
-        <select
-          value={limit}
-          onChange={(e) => setLimit(Number(e.target.value))}
-          className="border p-2 rounded"
-        >
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-        </select>
-        <span className="ml-2">animes</span>
-      </div>
-
-      {loading && <p className="text-center">Cargando animes...</p>}
+      <div
+  className="text-center py-4"
+  style={{ marginTop: "10px", marginBottom: "10px" }}
+>
+  <label className="mr-2 font-medium">Mostrar: </label>
+  <select
+    value={limit}
+    onChange={(e) => setLimit(Number(e.target.value))}
+    className="border p-2 rounded"
+  >
+    <option value="10">10</option>
+    <option value="20">20</option>
+  </select>
+  <span className="ml-2">animes</span>
+</div>
 
       {/* Lista de animes */}
       
@@ -174,9 +174,6 @@ const closeRecommendations = () => {
     ))}
   </div>
 )}
-
-
-
 
 
 {/* Recomendaciones */}
