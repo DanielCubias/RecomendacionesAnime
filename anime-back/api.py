@@ -11,8 +11,8 @@ CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 # -----------------------------
 # Database credentials
 # -----------------------------
-DB_USERNAME = "root"
-DB_PASSWORD = "123456"
+DB_USERNAME = input("Ingrese el usuario de la base de datos MySQL: ")
+DB_PASSWORD = input("Ingrese la contraseña de la base de datos MySQL: ")
 DB_HOST = "localhost"
 DB_NAME = "anime"
 
