@@ -1,16 +1,47 @@
 import React, { useState, useEffect } from "react";
 import "/src/index.css"
 import Recomendaciones from "./Recomendaciones";
+import Login from "./login";
+
+// manejo de login
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
+  return (
+    <>
+      {isAuthenticated ? (
+        <AnimeRatingApp />
+      ) : (
+        <Login onLoginSuccess={handleLoginSuccess} />
+      )}
+    </>
+  );
+}
+
+
+
+
 
 // puntuacion por defecto
 
-export default function AnimeRatingApp() {
+// export default function AnimeRatingApp() --> react solo renderiza el componente que exporta por defecto, por lo tanto
+// lo cambio a fuction y creo al final del archivo export default App; para que funcione
+function AnimeRatingApp() {
   const [animes, setAnimes] = useState([]);
   const [selectedAnimes, setSelectedAnimes] = useState({});
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState({});
   const [called, setCalled] = useState(false);
+  
+
 
 
   //  Obtener los animes desde la API
@@ -183,3 +214,6 @@ const closeRecommendations = () => {
     </div>
   );
 }
+
+// componenet principal del proyecto
+export default App; 
