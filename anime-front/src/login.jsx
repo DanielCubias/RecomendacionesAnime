@@ -35,7 +35,6 @@ function Login({ onLoginSuccess }) {
         if (isRegistering) {
           setMessage("Cuenta creada con éxito 🎉, ahora inicia sesión.");
           setIsRegistering(false);
-          // Limpiar campos después del registro
           setUsername("");
           setEmail("");
           setPassword("");
