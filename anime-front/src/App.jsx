@@ -40,7 +40,6 @@ function AnimeRatingApp() {
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState({});
   const [called, setCalled] = useState(false);
-  console.log(localStorage.getItem("userId"));
 
 
   //  Obtener los animes desde la API
@@ -74,12 +73,44 @@ function AnimeRatingApp() {
   };
 
   // Cambiar puntuación
-  const handleScoreChange = (animeId, value) => {
-    setSelectedAnimes((prev) => ({
-      ...prev,
-      [animeId]: { ...prev[animeId], score: parseFloat(value) },
-    }));
+  const handleScoreChange = async (animeId, value) => {
+  const parsedValue = parseFloat(value);
+
+  // Update state immediately
+  setSelectedAnimes((prev) => ({
+    ...prev,
+    [animeId]: { ...prev[animeId], score: parsedValue },
+  }));
+
+  // Prepare data for backend
+  const formattedData = {
+    user_id: localStorage.getItem("userId"),
+    anime_id: parseInt(animeId),
+    rating: parsedValue,
   };
+
+  console.log("Sending review:", formattedData);
+
+  // Send review to backend
+  try {
+    const response = await fetch("http://localhost:5000/rate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formattedData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Review enviada:", data);
+
+  } catch (err) {
+    console.error("Error al subir rate:", err);
+  }
+};
+
 
   const handleGetRecommendations = async () => {
   if (Object.keys(selectedAnimes).length === 0) {
@@ -120,6 +151,7 @@ const closeRecommendations = () => {
   setCalled(false);
   setRecommendations({});
 }
+
 
 
   return (

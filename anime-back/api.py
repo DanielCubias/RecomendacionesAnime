@@ -98,7 +98,8 @@ def rate():
     anime_id = data.get("anime_id")
     rating_value = data.get("rating")
 
-    if not all([user_id, anime_id, rating_value]):
+    # Check for missing fields correctly
+    if user_id is None or anime_id is None or rating_value is None:
         return jsonify({"error": "Missing fields"}), 400
 
     conn = get_db_connection()
