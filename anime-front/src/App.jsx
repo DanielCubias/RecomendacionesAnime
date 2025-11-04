@@ -7,7 +7,7 @@ import Login from "./login";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token")
+    false
   );
 
   const handleLoginSuccess = () => {
@@ -40,8 +40,7 @@ function AnimeRatingApp() {
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState({});
   const [called, setCalled] = useState(false);
-  
-
+  console.log(localStorage.getItem("userId"));
 
 
   //  Obtener los animes desde la API

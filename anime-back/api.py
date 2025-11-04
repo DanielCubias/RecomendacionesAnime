@@ -6,7 +6,7 @@ from AnimeData import AnimeData
 from Recommender import Recommender
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # -----------------------------
 # Database credentials
@@ -38,7 +38,7 @@ anime_data.filter_animes()
 # ----------------------------------------
 # User Management
 # ----------------------------------------
-@app.route("/register", methods=["POST"])
+@app.route("/auth/register", methods=["POST"])
 def register():
     data = request.get_json()
     username = data.get("username")
@@ -65,7 +65,7 @@ def register():
 
     return jsonify({"message": f"User {username} created successfully"}), 201
 
-@app.route("/login", methods=["POST"])
+@app.route("/auth/login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")

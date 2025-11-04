@@ -18,13 +18,10 @@ function Login({ onLoginSuccess }) {
     }
 
     const url = isRegistering
-      ? "http://localhost:5000/auth/register"
-      : "http://localhost:5000/auth/login";
+      ? "http://127.0.0.1:5000/auth/register"
+      : "http://127.0.0.1:5000/auth/login";
 
-    const payload = isRegistering
-      ? { username, email, password }
-      : { email, password };
-
+    const payload = { username: email, password: password }
     try {
       const res = await fetch(url, {
         method: "POST",
@@ -44,8 +41,7 @@ function Login({ onLoginSuccess }) {
           setPassword("");
           setConfirmPassword("");
         } else {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("username", data.username);
+          localStorage.setItem("userId", data.user_id);
           onLoginSuccess();
         }
       } else {
