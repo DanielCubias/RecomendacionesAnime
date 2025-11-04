@@ -1,17 +1,6 @@
 import pandas as pd
 
 class Recommender:
-    """
-    Collaborative Filtering Recommender for anime based on user ratings.
-
-    Attributes:
-        ratings_user (pd.DataFrame): DataFrame with columns ['user_id', 'anime_id', 'rating'].
-        movies (pd.DataFrame): DataFrame with columns ['anime_id', 'name', 'genre', 'rating'].
-        min_user_reviews (int): Minimum number of ratings a user must have to be included.
-        min_anime_reviews (int): Minimum number of ratings an anime must have to be included.
-        genre (str): Optional genre filter to only recommend anime of this genre.
-        userRatings (pd.DataFrame): User-item rating matrix (users x anime titles).
-    """
 
     def __init__(self, ratings_user=None, movies=None, min_user_reviews=300, min_anime_reviews=1500, genre=""):
         if ratings_user is None or movies is None:
@@ -26,13 +15,6 @@ class Recommender:
         self.userRatings = self._prepare_user_item_matrix()
 
     def _prepare_user_item_matrix(self):
-        print("[DEBUG] _prepare_user_item_matrix triggered")
-        """
-        Prepare the user-item matrix:
-        - Filters active users and popular anime based on thresholds.
-        - Optionally filters by genre.
-        - Creates a pivot table with users as rows and anime titles as columns.
-        """
         ratings_user = self.ratings_user.copy()
         movies = self.movies.copy()
 
@@ -65,27 +47,12 @@ class Recommender:
             columns='name',
             values='rating_user'
         )
-        print("Initial ratings shape:", ratings_user.shape)
-        print("Active users count:", len(active_users))
-        print("Popular anime count:", len(popular_anime))
         if self.genre.strip():
             genre_anime = movies[movies['genre'].str.contains(self.genre, case=False, na=False)]
-            print("Genre-filtered anime count:", len(genre_anime))
 
-        print(f"[DEBUG] User-item matrix prepared with {user_item_matrix.shape[0]} users and {user_item_matrix.shape[1]} anime titles.")
         return user_item_matrix
 
     def recommend(self, new_user_id, new_user_ratings):
-        """
-        Recommend top 10 anime for a new user.
-
-        Args:
-            new_user_id (int or str): Unique identifier for the new user.
-            new_user_ratings (dict): Dictionary of {anime_name: rating} for the new user.
-
-        Returns:
-            dict: Top 10 recommended anime with similarity-weighted scores.
-        """
         userRatings = self.userRatings.copy()  # fresh copy each request
 
         # Convert new user ratings to float
@@ -101,12 +68,9 @@ class Recommender:
         new_user_series = new_user_series.reindex(userRatings.columns)  # align with existing columns
         userRatings = pd.concat([userRatings, new_user_series.to_frame().T], axis=0)
 
-        print(f"[DEBUG] New user ratings added. Matrix now has {userRatings.shape[0]} users and {userRatings.shape[1]} anime titles.")
         myRatings = userRatings.loc[new_user_id].dropna()
-        print(f"[DEBUG] Ratings considered for similarity computation: {myRatings}")
 
         if myRatings.empty:
-            print("[WARNING] New user has no overlap with existing anime in matrix. Cannot compute recommendations.")
             return {}
 
         # Compute item-item similarity
@@ -132,5 +96,4 @@ class Recommender:
         sim_candidates.sort_values(ascending=False, inplace=True)
 
         top_10 = sim_candidates.head(10).to_dict()
-        print(f"[DEBUG] Top 10 recommendations: {top_10}")
         return top_10

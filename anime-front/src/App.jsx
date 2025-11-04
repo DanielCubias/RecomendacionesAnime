@@ -83,7 +83,6 @@ function AnimeRatingApp() {
   };
 
   const handleGetRecommendations = async () => {
-  console.log("Animes seleccionados para recomendaciones:", selectedAnimes);
   if (Object.keys(selectedAnimes).length === 0) {
     alert("Por favor, selecciona al menos un anime y asigna una puntuación.");
     return;
@@ -109,7 +108,6 @@ function AnimeRatingApp() {
     }
 
     const data = await response.json();
-    console.log("Recomendaciones recibidas:", data);
 
     // 👇 Guardamos las recomendaciones recibidas
     setRecommendations(data || {});
