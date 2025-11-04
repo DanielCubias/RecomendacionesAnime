@@ -6,7 +6,7 @@ from AnimeData import AnimeData
 from Recommender import Recommender
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # -----------------------------
 # Database credentials
@@ -38,7 +38,7 @@ anime_data.filter_animes()
 # ----------------------------------------
 # User Management
 # ----------------------------------------
-@app.route("/register", methods=["POST"])
+@app.route("/auth/register", methods=["POST"])
 def register():
     data = request.get_json()
     username = data.get("username")
@@ -65,7 +65,7 @@ def register():
 
     return jsonify({"message": f"User {username} created successfully"}), 201
 
-@app.route("/login", methods=["POST"])
+@app.route("/auth/login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")
@@ -98,7 +98,8 @@ def rate():
     anime_id = data.get("anime_id")
     rating_value = data.get("rating")
 
-    if not all([user_id, anime_id, rating_value]):
+    # Check for missing fields correctly
+    if user_id is None or anime_id is None or rating_value is None:
         return jsonify({"error": "Missing fields"}), 400
 
     conn = get_db_connection()

@@ -5,7 +5,7 @@ import Login from "./login";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token")
+    false
   );
 
   const handleLoginSuccess = () => {
@@ -40,8 +40,11 @@ function AnimeRatingApp({ onLogout }) {
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState({});
   const [called, setCalled] = useState(false);
+  
 
-  // Obtener animes desde la API
+
+
+  //  Obtener los animes desde la API
   useEffect(() => {
     const fetchAnimes = async () => {
       try {
@@ -76,7 +79,7 @@ function AnimeRatingApp({ onLogout }) {
   const handleScoreChange = (animeId, value) => {
     setSelectedAnimes((prev) => ({
       ...prev,
-      [animeId]: { ...prev[animeId], score: parseFloat(value) || 0 },
+      [animeId]: { ...prev[animeId], score: parseFloat(value) },
     }));
   };
 
@@ -112,10 +115,11 @@ function AnimeRatingApp({ onLogout }) {
     }
   };
 
-  const closeRecommendations = () => {
-    setCalled(false);
-    setRecommendations({});
-  };
+const closeRecommendations = () => {
+  setCalled(false);
+  setRecommendations({});
+}
+
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
