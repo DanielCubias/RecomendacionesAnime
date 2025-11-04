@@ -160,8 +160,6 @@ def recommend(user_id):
     # Recommendations include the logged-in user's MySQL ratings
     result = recommender.recommend(user_id, user_ratings)
     if not result:
-        print("User Ratings:", user_ratings)
-        print("No recommendations found for user:", user_id)
         return jsonify({"warning": "No recommendations found", "user_ratings": user_ratings}), 404
 
     # Map anime_id to anime name

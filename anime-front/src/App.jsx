@@ -69,7 +69,6 @@ function AnimeRatingApp({ onLogout }) {
           throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
-        console.log("Initial ratings received:", data);
 
         // data: { anime_id: { title, score } } → set to state
         setSelectedAnimes(data || {});
@@ -118,7 +117,6 @@ function AnimeRatingApp({ onLogout }) {
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
       const data = await response.json();
-      console.log("Review enviada:", data);
     } catch (err) {
       console.error("Error al subir rate:", err);
     }
