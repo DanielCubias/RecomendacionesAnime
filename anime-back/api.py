@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pymysql
-from werkzeug.security import generate_password_hash, check_password_hash
+import pandas as pd
 from AnimeData import AnimeData
 from Recommender import Recommender
 
@@ -29,7 +29,7 @@ def get_db_connection():
     )
 
 # -----------------------------
-# Load anime data once at startup
+# Load anime and ratings CSV at startup
 # -----------------------------
 anime_data = AnimeData("./rating.csv", "./anime.csv")
 anime_data.filter_users()
@@ -50,7 +50,6 @@ def register():
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
-            # Check if user exists
             cursor.execute("SELECT * FROM user WHERE username=%s", (username,))
             if cursor.fetchone():
                 return jsonify({"error": "User already exists"}), 400
@@ -66,7 +65,6 @@ def register():
 
     return jsonify({"message": f"User {username} created successfully"}), 201
 
-
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -76,12 +74,15 @@ def login():
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM user WHERE username=%s AND password=%s", (username, password))
+            cursor.execute(
+                "SELECT * FROM user WHERE username=%s AND password=%s",
+                (username, password)
+            )
             row = cursor.fetchone()
             if not row:
                 return jsonify({"error": "Invalid username or password"}), 401
 
-            user_id = row['id']
+            user_id = row['user_id']
     finally:
         conn.close()
 
@@ -135,28 +136,27 @@ def recommend(user_id):
     try:
         with conn.cursor() as cursor:
             # Check if user exists
-            cursor.execute("SELECT * FROM user WHERE id=%s", (user_id,))
+            cursor.execute("SELECT * FROM user WHERE user_id=%s", (user_id,))
             user = cursor.fetchone()
             if not user:
                 return jsonify({"error": "User not found"}), 404
 
-            # Get user's ratings
+            # Get logged-in user's ratings from MySQL
             cursor.execute("SELECT anime_id, rating FROM rating WHERE user_id=%s", (user_id,))
             rows = cursor.fetchall()
-            if not rows:
-                return jsonify({"warning": "User has no ratings"}), 400
-
             user_ratings = {row['anime_id']: row['rating'] for row in rows}
     finally:
         conn.close()
 
+    # Initialize recommender with CSV ratings
     recommender = Recommender(
         ratings_user=anime_data.ratings,
         movies=anime_data.animes,
-        min_user_reviews=1,
+        min_user_reviews=1,      # CSV filtering already done
         min_anime_reviews=1
     )
 
+    # Recommendations include the logged-in user's MySQL ratings
     result = recommender.recommend(user_id, user_ratings)
     if not result:
         return jsonify({"warning": "No recommendations found"})
