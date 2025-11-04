@@ -153,16 +153,49 @@ def recommend(user_id):
     recommender = Recommender(
         ratings_user=anime_data.ratings,
         movies=anime_data.animes,
-        min_user_reviews=1,      # CSV filtering already done
-        min_anime_reviews=1
+        min_user_reviews=50,      # narrowed to active users
+        min_anime_reviews=1000    # narrowed to popular anime
     )
 
     # Recommendations include the logged-in user's MySQL ratings
     result = recommender.recommend(user_id, user_ratings)
     if not result:
-        return jsonify({"warning": "No recommendations found"})
+        print("User Ratings:", user_ratings)
+        print("No recommendations found for user:", user_id)
+        return jsonify({"warning": "No recommendations found", "user_ratings": user_ratings}), 404
 
-    return jsonify(result)
+    # Map anime_id to anime name
+    anime_map = pd.Series(anime_data.animes['name'].values, index=anime_data.animes['anime_id']).to_dict()
+    result_named = {anime_map.get(int(anime_id), f"Unknown {anime_id}"): score for anime_id, score in result.items()}
+
+    return jsonify(result_named)
+
+@app.route("/user_ratings/<int:user_id>", methods=["GET"])
+def get_user_ratings(user_id):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            # Check if user exists
+            cursor.execute("SELECT * FROM user WHERE user_id=%s", (user_id,))
+            user = cursor.fetchone()
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+
+            # Fetch user's ratings
+            cursor.execute("SELECT anime_id, rating FROM rating WHERE user_id=%s", (user_id,))
+            rows = cursor.fetchall()
+            user_ratings = {row['anime_id']: row['rating'] for row in rows}
+    finally:
+        conn.close()
+
+    # Map anime_id → anime title
+    anime_map = pd.Series(anime_data.animes['name'].values, index=anime_data.animes['anime_id']).to_dict()
+    user_ratings_named = {int(anime_id): {"title": anime_map.get(int(anime_id), f"Unknown {anime_id}"), "score": score} 
+                          for anime_id, score in user_ratings.items()}
+
+    return jsonify(user_ratings_named)
+
+
 
 # ----------------------------------------
 # Run App

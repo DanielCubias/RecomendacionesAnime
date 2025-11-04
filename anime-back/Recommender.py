@@ -16,39 +16,28 @@ class Recommender:
 
     def _prepare_user_item_matrix(self):
         ratings_user = self.ratings_user.copy()
-        movies = self.movies.copy()
 
-        # Filter active users
+        # Keep only active users
         user_review_counts = ratings_user['user_id'].value_counts()
-        active_users = user_review_counts[user_review_counts >= self.min_user_reviews].index
-        ratings_user = ratings_user[ratings_user['user_id'].isin(active_users)]
+        active_users = user_review_counts[user_review_counts >= 50]  # >=50 ratings
+        ratings_user = ratings_user[ratings_user['user_id'].isin(active_users.index)]
 
-        # Filter popular anime
+        # Keep only popular anime
         anime_review_counts = ratings_user['anime_id'].value_counts()
-        popular_anime = anime_review_counts[anime_review_counts >= self.min_anime_reviews].index
-        ratings_user = ratings_user[ratings_user['anime_id'].isin(popular_anime)]
+        popular_anime = anime_review_counts[anime_review_counts >= 1000]  # >=1000 ratings
+        ratings_user = ratings_user[ratings_user['anime_id'].isin(popular_anime.index)]
 
-        # Optional genre filtering
+        # Optional: filter by genre
         if self.genre.strip():
-            genre_anime = movies[movies['genre'].str.contains(self.genre, case=False, na=False)]
+            genre_anime = self.movies[self.movies['genre'].str.contains(self.genre, case=False, na=False)]
             ratings_user = ratings_user[ratings_user['anime_id'].isin(genre_anime['anime_id'])]
 
-        # Merge ratings with anime info
-        ratings_merged = pd.merge(
-            ratings_user.rename(columns={'rating': 'rating_user'}),
-            movies.rename(columns={'rating': 'rating_anime'}),
-            on='anime_id',
-            how='inner'
-        )
-
-        # Pivot table: rows = users, columns = anime titles, values = ratings
-        user_item_matrix = ratings_merged.pivot_table(
+        # Build pivot table (rows=users, columns=anime_id)
+        user_item_matrix = ratings_user.pivot_table(
             index='user_id',
-            columns='name',
-            values='rating_user'
+            columns='anime_id',
+            values='rating'
         )
-        if self.genre.strip():
-            genre_anime = movies[movies['genre'].str.contains(self.genre, case=False, na=False)]
 
         return user_item_matrix
 

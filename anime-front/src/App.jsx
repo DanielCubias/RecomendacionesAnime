@@ -55,7 +55,7 @@ function AnimeRatingApp() {
         console.error("Error al obtener los animes:", err);
       }
     };
-
+    getInitialRatings();
     fetchAnimes();
   }, [limit]);
 
@@ -111,26 +111,41 @@ function AnimeRatingApp() {
   }
 };
 
+const getInitialRatings = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/user_ratings/"+localStorage.getItem("userId"), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // 👇 Guardamos las recomendaciones recibidas
+    console.log("Initial ratings received:", data);
+    setSelectedAnimes(Object.values(data) || {});
+  } catch (err) {
+    console.error("Error al obtener recomendaciones:", err);
+    setCalled(false);
+  }
+}
+
 
   const handleGetRecommendations = async () => {
   if (Object.keys(selectedAnimes).length === 0) {
     alert("Por favor, selecciona al menos un anime y asigna una puntuación.");
     return;
   }
+  
   setCalled(true);
 
-  const formattedData = {
-    ratings: Object.entries(selectedAnimes).map(([id, anime]) => ({
-      name: anime.title,
-      rating: parseFloat(anime.score),
-    })),
-  };
-
   try {
-    const response = await fetch("http://localhost:5000/anime/", {
-      method: "POST",
+    const response = await fetch("http://localhost:5000/recommend/"+localStorage.getItem("userId"), {
+      method: "GET",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formattedData),
     });
 
     if (!response.ok) {
