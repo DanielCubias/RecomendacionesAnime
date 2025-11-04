@@ -40,8 +40,7 @@ function Login({ onLoginSuccess }) {
           setPassword("");
           setConfirmPassword("");
         } else {
-          localStorage.setItem("userId", data.user_id);
-          onLoginSuccess();
+          onLoginSuccess(data.user_id);
         }
       } else {
         setMessage(data.error || "Error al procesar la solicitud.");
